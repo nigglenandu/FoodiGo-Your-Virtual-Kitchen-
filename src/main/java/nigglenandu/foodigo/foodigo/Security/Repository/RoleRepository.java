@@ -1,7 +1,7 @@
 package nigglenandu.foodigo.foodigo.Security.Repository;
 
-import nigglenandu.foodigo.foodigo.model.RoleEntity;
-import nigglenandu.foodigo.foodigo.model.Roles;
+import nigglenandu.foodigo.foodigo.Security.model.RoleEntity;
+import nigglenandu.foodigo.foodigo.Security.model.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

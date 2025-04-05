@@ -1,4 +1,4 @@
-package nigglenandu.foodigo.foodigo.model;
+package nigglenandu.foodigo.foodigo.Security.model;
 
 public enum Roles {
     CUSTOMER,

@@ -1,8 +1,8 @@
 package nigglenandu.foodigo.foodigo.Security.SecurityConfig;
 
 import nigglenandu.foodigo.foodigo.Security.Repository.RoleRepository;
-import nigglenandu.foodigo.foodigo.model.RoleEntity;
-import nigglenandu.foodigo.foodigo.model.Roles;
+import nigglenandu.foodigo.foodigo.Security.model.RoleEntity;
+import nigglenandu.foodigo.foodigo.Security.model.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
