@@ -39,8 +39,8 @@ public class UserApp {
     @Column(nullable = true, unique = true)
     private String phoneNumber;
 
+    @ManyToOne
     @NotNull(message = "Role cannot be null")
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Roles role;
+    @JoinColumn(name = "role_id",nullable = false)
+    private RoleEntity role;
 }
