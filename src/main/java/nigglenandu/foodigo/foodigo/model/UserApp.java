@@ -1,4 +1,4 @@
-package nigglenandu.foodigo.foodigo.Security;
+package nigglenandu.foodigo.foodigo.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

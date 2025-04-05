@@ -1,11 +1,18 @@
 package nigglenandu.foodigo.foodigo.Security.Dto;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
-import nigglenandu.foodigo.foodigo.Security.Roles;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nigglenandu.foodigo.foodigo.model.Roles;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupDto {
 
     @NotBlank(message = "Username cannot be empty.")
