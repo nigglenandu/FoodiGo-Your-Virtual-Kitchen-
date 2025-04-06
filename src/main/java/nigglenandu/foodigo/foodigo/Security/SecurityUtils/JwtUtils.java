@@ -27,59 +27,61 @@ public class JwtUtils {
     @Value("${spring.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String getJwtFromHeader(HttpServletRequest request){
+    public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         logger.debug("Authorization Header: {}", bearerToken);
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")){
-            return bearerToken.substring(7);
-        } else {
-            return null;
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7); // Remove Bearer prefix
         }
+        return null;
     }
 
-    public String generateTokenFormUsername(UserDetails userDetails) {
+    public String generateTokenFromUsername(UserDetails userDetails) {
         try {
             String username = userDetails.getUsername();
+            System.out.println("Generating token for username: " + username);
 
             String token = Jwts.builder()
                     .setSubject(username)
                     .setIssuedAt(new Date())
-                    .setExpiration(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                     .signWith(key())
                     .compact();
+            System.out.println("Generated Token: " + token);
             return token;
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println("Error generating JWT Token: " + e.getMessage());
             return null;
         }
     }
 
-    private Key key(){
-        return Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(jwtSecret));
-    }
 
-    public String getUsernameFromJwtToken(String token){
+    public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) key())
                 .build().parseSignedClaims(token)
                 .getPayload().getSubject();
     }
 
-    public boolean validateJwtToken(String authToken){
+    private Key key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
+
+    public boolean validateJwtToken(String authToken) {
         try {
             System.out.println("Validate");
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken);
             return true;
-        } catch (MalformedJwtException e){
-            logger.error("Invalid Jwt token: {}", e.getMessage());
-        } catch (ExpiredJwtException e ){
-            logger.error("Jwt token is expired: {}", e.getMessage());
-        } catch (UnsupportedJwtException e){
-            logger.error("Jwt token is unsupported: {}", e.getMessage());
-        } catch (IllegalArgumentException e){
-            logger.error("Jwt claims string is empty: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
     }
-
 }

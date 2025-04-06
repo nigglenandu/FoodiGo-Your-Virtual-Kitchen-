@@ -2,6 +2,7 @@ package nigglenandu.foodigo.foodigo.Security.Authentication;
 
 import nigglenandu.foodigo.foodigo.Security.Paylaod.JwtResponse;
 import nigglenandu.foodigo.foodigo.Security.Paylaod.LoginRequest;
+import nigglenandu.foodigo.foodigo.Security.Paylaod.MessageResponse;
 import nigglenandu.foodigo.foodigo.Security.Paylaod.SignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,17 +27,17 @@ public class AuthController {
             JwtResponse jwtResponse = serviceAuth.authentication(loginRequest);
             return ResponseEntity.ok(jwtResponse);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
         try{
-            String messsage = serviceAuth.registerUser(signupRequest);
-            return ResponseEntity.ok(messsage);
+            String message = serviceAuth.registerUser(signupRequest);
+            return ResponseEntity.ok(new MessageResponse(message));
         } catch (RuntimeException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
 }

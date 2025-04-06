@@ -1,13 +1,10 @@
 package nigglenandu.foodigo.foodigo.Security.Paylaod;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nigglenandu.foodigo.foodigo.Security.model.RoleEntity;
 import nigglenandu.foodigo.foodigo.Security.model.Roles;
 
 import java.util.Set;
@@ -37,5 +34,5 @@ public class SignupRequest {
     private String phoneNumber;
 
     @NotNull(message = "Role cannot be null")
-    private Set<RoleEntity> role;
+    private Set<String> role;
 }

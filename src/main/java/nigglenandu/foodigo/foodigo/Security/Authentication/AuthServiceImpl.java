@@ -25,13 +25,21 @@ import java.util.stream.Collectors;
 @Service
 public class AuthServiceImpl implements IServiceAuth{
     private final RoleRepository roleRepository;
-    private AuthenticationManager authenticationManager;
-    private JwtUtils jwtUtils;
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(RoleRepository roleRepository) {
+    public AuthServiceImpl(RoleRepository roleRepository,
+                           AuthenticationManager authenticationManager,
+                           JwtUtils jwtUtils,
+                           UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -43,9 +51,9 @@ public class AuthServiceImpl implements IServiceAuth{
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        String jwt = jwtUtils.generateTokenFormUsername(userDetails);
+        String jwt = jwtUtils.generateTokenFromUsername(userDetails);
 
-        Optional<UserApp> userAppOptional = userRepository.findUsername(userDetails.getUsername());
+        Optional<UserApp> userAppOptional = userRepository.findByUsername(userDetails.getUsername());
 
         if(userAppOptional.isEmpty()){
             throw new RuntimeException("Error: User not found!");
@@ -58,8 +66,6 @@ public class AuthServiceImpl implements IServiceAuth{
 
         return new JwtResponse(jwt, roles, user.getId(), user.getUsername(), user.getEmail());
     }
-
-
 
     @Override
     public String registerUser(SignupRequest signupRequest) {
@@ -74,7 +80,7 @@ public class AuthServiceImpl implements IServiceAuth{
         user.setPhoneNumber(signupRequest.getPhoneNumber());
 
         RoleEntity role = roleRepository.findByRole(Roles.CUSTOMER)
-                        .orElseThrow(() -> new RuntimeException("Error: Defaullt role (ROLE_USER) not found!"));
+                        .orElseThrow(() -> new RuntimeException("Error: Default role (ROLE_USER) not found!"));
         user.setRoles(Collections.singleton(role));
 
         userRepository.save(user);
