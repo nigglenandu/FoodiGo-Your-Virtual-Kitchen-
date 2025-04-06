@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nigglenandu.foodigo.foodigo.Security.model.Roles;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -34,5 +34,5 @@ public class SignupRequest {
     private String phoneNumber;
 
     @NotNull(message = "Role cannot be null")
-    private Set<String> role;
+    private Set<String> role = new HashSet<>();
 }

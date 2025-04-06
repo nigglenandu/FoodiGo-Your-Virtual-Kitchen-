@@ -12,7 +12,6 @@ import java.util.Set;
 @ToString
 @Getter
 @Setter
-@Data
 @Entity
 public class UserApp {
 
@@ -46,7 +45,7 @@ public class UserApp {
     @NotNull(message = "Role cannot be null")
     @JoinTable(
             name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_role"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles = new HashSet<>();

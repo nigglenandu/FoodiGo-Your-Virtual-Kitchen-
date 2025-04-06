@@ -6,13 +6,15 @@ import lombok.Setter;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Setter
 @Getter
+@AllArgsConstructor
 public class JwtResponse {
     private String token;
+    private String type;
     private List<String> roles;
     private Long userId;
     private String username;
     private String email;
+
 }
