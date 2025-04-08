@@ -11,7 +11,6 @@ import lombok.*;
 @ToString
 @Entity
 public class DeliveryLocation {
-
     @Id
     private Long deliveryId;
     private double Longitude;
