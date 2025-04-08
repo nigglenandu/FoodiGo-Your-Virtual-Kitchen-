@@ -2,6 +2,9 @@ package nigglenandu.foodigo.foodigo.Security.Verification.Controller;
 
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+import nigglenandu.foodigo.foodigo.Security.Repository.UserRepository;
+import nigglenandu.foodigo.foodigo.Security.model.UserApp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,13 +13,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("api/phone")
 public class PhoneVerificationController {
 
+    @Autowired
+    private UserRepository userRepository;
+
     private final Map<String, String> storedOtp = new ConcurrentHashMap<>();
+
+    public PhoneVerificationController(UserRepository userRepository) {
+    }
 
     public ResponseEntity<String>  optSend(@RequestParam String phoneNumber){
         String otp = generateOtp();
@@ -36,11 +46,20 @@ public class PhoneVerificationController {
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<String>  verifyOtp(@RequestParam String PhoneNumber,
+    public ResponseEntity<String>  verifyOtp(@RequestParam String phoneNumber,
                                              @RequestParam String otp){
         if (storedOtp.equals(otp)) {
-            storedOtp.remove(otp);
-            return ResponseEntity.ok("OTP verified");
+
+            Optional<UserApp> userAppOptional = userRepository.findByPhoneNumber(phoneNumber);
+            if(userAppOptional.isPresent()){
+                UserApp userApp = userAppOptional.get();
+                userApp.isPhoneVerified();
+                userRepository.save(userApp);
+                storedOtp.remove(otp);
+                return ResponseEntity.ok("OTP verified");
+            }else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP");
         }
