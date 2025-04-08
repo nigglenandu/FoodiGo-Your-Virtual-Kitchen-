@@ -1,5 +1,6 @@
 package nigglenandu.foodigo.foodigo.Security.Authentication;
 
+import jakarta.validation.Valid;
 import nigglenandu.foodigo.foodigo.Security.Paylaod.JwtResponse;
 import nigglenandu.foodigo.foodigo.Security.Paylaod.LoginRequest;
 import nigglenandu.foodigo.foodigo.Security.Paylaod.SignupRequest;
@@ -45,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -73,7 +74,7 @@ public class AuthController {
     }
 
     @PostMapping("signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
         if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }

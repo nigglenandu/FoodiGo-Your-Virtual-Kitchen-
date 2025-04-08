@@ -37,7 +37,7 @@ public class UserApp {
     @Column(nullable = true, unique = true)
     private String email;
 
-    @Pattern(regexp = "^\\+97798\\d{7}$", message = "Invalid phone number. It must start with +97798 and be 10 digits long.")
+    @Pattern(regexp = "^\\+97798\\d{8}$", message = "Invalid phone number. It must start with +97798 and be 10 digits long.")
     @Column(nullable = true, unique = true)
     private String phoneNumber;
 

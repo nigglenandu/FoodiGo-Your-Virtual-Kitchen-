@@ -30,7 +30,7 @@ public class SignupRequest {
     @Email(message = "Invalid email format")
     private String email;
 
-    @Pattern(regexp = "^\\+97798\\d{7}$", message = "Invalid phone number. It must start with +97798 and be 10 digits long.")
+    @Pattern(regexp = "^\\+97798\\d{8}$", message = "Invalid phone number. It must start with +97798 and be 10 digits long.")
     private String phoneNumber;
 
     @NotNull(message = "Role cannot be null")
