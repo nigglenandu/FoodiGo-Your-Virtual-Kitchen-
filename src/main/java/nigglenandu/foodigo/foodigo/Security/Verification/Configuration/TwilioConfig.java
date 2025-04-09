@@ -15,11 +15,12 @@ public class TwilioConfig {
     private String twilioAuthToken;
 
     @Value("${twilio.phone-number}")
-    private String phoneNumber;
+    private String twilioSenderNumber;
+
 
     @PostConstruct
     public void init(){
         Twilio.init(twilioSid, twilioAuthToken);
-        System.out.println("Twilio initialized successfully with phone number" + phoneNumber);
+        System.out.println("Twilio initialized successfully with phone number" + twilioSenderNumber);
     }
 }

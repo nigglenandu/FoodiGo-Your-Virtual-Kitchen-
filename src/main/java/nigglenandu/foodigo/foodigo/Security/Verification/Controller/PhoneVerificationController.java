@@ -5,6 +5,7 @@ import com.twilio.type.PhoneNumber;
 import nigglenandu.foodigo.foodigo.Security.Repository.UserRepository;
 import nigglenandu.foodigo.foodigo.Security.model.UserApp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,9 @@ public class PhoneVerificationController {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${twilio.phone-number}")
+    private String twilioSenderNumber;
+
     private final Map<String, String> storedOtp = new ConcurrentHashMap<>();
 
     @PostMapping("/sendOtp")
@@ -31,8 +35,8 @@ public class PhoneVerificationController {
         storedOtp.put(phoneNumber, otp);
 
         Message.creator(
-                new PhoneNumber("MyNum"),
-                new PhoneNumber("TwilioNum"),
+                new PhoneNumber(phoneNumber),
+                new PhoneNumber(twilioSenderNumber),
                 "Your OTP: " + otp
         ).create();
 
