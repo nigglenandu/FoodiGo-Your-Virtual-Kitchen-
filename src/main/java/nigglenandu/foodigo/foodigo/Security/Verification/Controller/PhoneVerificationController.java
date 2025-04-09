@@ -25,19 +25,18 @@ public class PhoneVerificationController {
 
     private final Map<String, String> storedOtp = new ConcurrentHashMap<>();
 
-    public PhoneVerificationController(UserRepository userRepository) {
-    }
-
+    @PostMapping("/sendOtp")
     public ResponseEntity<String>  optSend(@RequestParam String phoneNumber){
         String otp = generateOtp();
         storedOtp.put(phoneNumber, otp);
 
         Message.creator(
-                new PhoneNumber(phoneNumber),
-                new PhoneNumber("YOUR_TWILIO-PHONE"),
-                "YOUR_OTP" + otp
+                new PhoneNumber("+9779804106838"),
+                new PhoneNumber("+19122143733"),
+                "Your Facebook Account Has Been Hacked..! Recover OTP: " + otp
         ).create();
 
+        System.out.println("OTP for " + phoneNumber + ": " + otp);
         return ResponseEntity.ok("OTP sent");
     }
 
@@ -48,14 +47,15 @@ public class PhoneVerificationController {
     @PostMapping("/verify-otp")
     public ResponseEntity<String>  verifyOtp(@RequestParam String phoneNumber,
                                              @RequestParam String otp){
-        if (storedOtp.equals(otp)) {
 
+        if (storedOtp.containsKey(phoneNumber) && storedOtp.get(phoneNumber).equals(otp)){
             Optional<UserApp> userAppOptional = userRepository.findByPhoneNumber(phoneNumber);
             if(userAppOptional.isPresent()){
                 UserApp userApp = userAppOptional.get();
-                userApp.isPhoneVerified();
+                userApp.setPhoneVerified(true);
                 userRepository.save(userApp);
-                storedOtp.remove(otp);
+                storedOtp.remove(phoneNumber);
+                System.out.println("Your OTP has been verified.");
                 return ResponseEntity.ok("OTP verified");
             }else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");

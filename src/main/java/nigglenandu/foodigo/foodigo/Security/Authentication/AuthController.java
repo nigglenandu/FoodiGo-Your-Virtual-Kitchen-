@@ -83,6 +83,7 @@ public class AuthController {
         user.setUsername(signupRequest.getUsername());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setEmail(signupRequest.getEmail());
+        user.setPhoneNumber(signupRequest.getPhoneNumber());
 
         Optional<RoleEntity> userRole = roleRepository.findByRole(Roles.CUSTOMER);
         RoleEntity role = roleRepository.findByRole(Roles.CUSTOMER)

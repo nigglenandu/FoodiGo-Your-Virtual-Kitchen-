@@ -30,6 +30,7 @@ public class SignupRequest {
     @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "Phone number cannot be empty")
     @Pattern(regexp = "^\\+97798\\d{8}$", message = "Invalid phone number. It must start with +97798 and be 10 digits long.")
     private String phoneNumber;
 

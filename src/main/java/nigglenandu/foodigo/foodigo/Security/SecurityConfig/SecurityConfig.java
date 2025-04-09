@@ -28,20 +28,31 @@ public class SecurityConfig {
         this.unauthorizedHandler = unauthorizedHandler;
     }
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+//        http
+//                .csrf(csrf -> csrf.disable())
+//                .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/apis/auth/**").permitAll()
+//                        .requestMatchers("/api/phone/**").permitAll()
+//                        .requestMatchers("/api/delivery/**").authenticated()
+//                        .anyRequest().authenticated()
+//                )
+//                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
                 .csrf(csrf -> csrf.disable())
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/apis/auth/**").permitAll()
-                        .requestMatchers("/api/delivery/**").authenticated()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                        .anyRequest().permitAll() // Allows all requests without authentication
+                );
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{

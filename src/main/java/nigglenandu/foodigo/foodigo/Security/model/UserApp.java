@@ -39,6 +39,7 @@ public class UserApp {
 
     @Pattern(regexp = "^\\+97798\\d{8}$", message = "Invalid phone number. It must start with +97798 and be 10 digits long.")
     @Column(nullable = true, unique = true)
+    @NotBlank(message = "Phone number cannot be empty")
     private String phoneNumber;
 
     private boolean isPhoneVerified = false;
