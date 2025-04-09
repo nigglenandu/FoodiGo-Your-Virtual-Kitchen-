@@ -31,9 +31,9 @@ public class PhoneVerificationController {
         storedOtp.put(phoneNumber, otp);
 
         Message.creator(
-                new PhoneNumber("+9779804106838"),
-               // new PhoneNumber("+19122143733"),
-                "Your Facebook Account Has Been Hacked..! Recover OTP: " + otp
+                new PhoneNumber("MyNum"),
+                new PhoneNumber("TwilioNum"),
+                "Your OTP: " + otp
         ).create();
 
         System.out.println("OTP for " + phoneNumber + ": " + otp);
