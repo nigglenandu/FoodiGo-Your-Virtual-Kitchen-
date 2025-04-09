@@ -32,7 +32,7 @@ public class PhoneVerificationController {
 
         Message.creator(
                 new PhoneNumber("+9779804106838"),
-                new PhoneNumber("+19122143733"),
+               // new PhoneNumber("+19122143733"),
                 "Your Facebook Account Has Been Hacked..! Recover OTP: " + otp
         ).create();
 
