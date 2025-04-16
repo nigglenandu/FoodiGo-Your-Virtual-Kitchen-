@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class VerificationToken {
     @Id
@@ -22,7 +21,13 @@ public class VerificationToken {
     private String token;
 
     @OneToOne
-    private UserApp userApp;
+    private UserApp user;
 
     private LocalDateTime expiryDate;
+
+    public VerificationToken(String token, UserApp user, LocalDateTime expiryDate) {
+        this.token = token;
+        this.user = user;
+        this.expiryDate = expiryDate;
+    }
 }

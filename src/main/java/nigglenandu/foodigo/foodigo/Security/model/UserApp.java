@@ -44,6 +44,8 @@ public class UserApp {
 
     private boolean isPhoneVerified = false;
 
+    private boolean isEmailVerified = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @NotNull(message = "Role cannot be null")
     @JoinTable(

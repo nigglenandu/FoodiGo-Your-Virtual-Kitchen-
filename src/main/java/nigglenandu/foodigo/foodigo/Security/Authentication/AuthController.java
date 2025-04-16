@@ -7,6 +7,9 @@ import nigglenandu.foodigo.foodigo.Security.Paylaod.SignupRequest;
 import nigglenandu.foodigo.foodigo.Security.Repository.RoleRepository;
 import nigglenandu.foodigo.foodigo.Security.Repository.UserRepository;
 import nigglenandu.foodigo.foodigo.Security.SecurityUtils.JwtUtils;
+import nigglenandu.foodigo.foodigo.Security.Verification.EmailVerification.EmailService;
+import nigglenandu.foodigo.foodigo.Security.Verification.EmailVerification.VerificationEmailTokenRepo;
+import nigglenandu.foodigo.foodigo.Security.Verification.EmailVerification.VerificationToken;
 import nigglenandu.foodigo.foodigo.Security.model.RoleEntity;
 import nigglenandu.foodigo.foodigo.Security.model.Roles;
 import nigglenandu.foodigo.foodigo.Security.model.UserApp;
@@ -22,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,13 +41,17 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final VerificationEmailTokenRepo verificationEmailTokenRepo;
+    private final EmailService emailService;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, VerificationEmailTokenRepo verificationEmailTokenRepo, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
+        this.verificationEmailTokenRepo = verificationEmailTokenRepo;
+        this.emailService = emailService;
     }
 
     @PostMapping("login")
@@ -84,20 +93,29 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setEmail(signupRequest.getEmail());
         user.setPhoneNumber(signupRequest.getPhoneNumber());
+        user.setEmailVerified(false);
 
-        Optional<RoleEntity> userRole = roleRepository.findByRole(Roles.CUSTOMER);
+//        Optional<RoleEntity> userRole = roleRepository.findByRole(Roles.CUSTOMER);
         RoleEntity role = roleRepository.findByRole(Roles.CUSTOMER)
                 .orElseThrow(() -> new RuntimeException("Error: Default role not found!"));
         user.setRoles(Collections.singleton(role));
 
 
         userRepository.save(user);
+
+        String token = UUID.randomUUID().toString();
+        VerificationToken vToken = new VerificationToken(token, user, LocalDateTime.now().plusMinutes(30));
+        verificationEmailTokenRepo.save(vToken);
+
+        String verificationUrl = "http://localhost:8080/apis/auth/verify?token=" + token;
+        emailService.sendEmailVerification(user.getEmail(), verificationUrl);
+
         return ResponseEntity.ok("User registered successfully!");
     }
 
     @PostMapping("logout")
     public ResponseEntity<?> logoutUser() {
         SecurityContextHolder.clearContext();
-        return ResponseEntity.ok("User logged out successfully!");
+        return ResponseEntity.ok("User logged out successfully! Please check your email to verify your account.");
     }
 }
