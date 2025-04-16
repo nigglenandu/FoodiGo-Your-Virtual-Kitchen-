@@ -20,10 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -78,6 +75,10 @@ public class AuthController {
                 .map(role -> role.getRole().name())
                 .collect(Collectors.toList());
 
+        if(!user.isEmailVerified()){
+            return ResponseEntity.badRequest().body("Please verify your email before logging in");
+        }
+
         return ResponseEntity.ok(new JwtResponse(jwt, "Bearer", roles, user.getId(), user.getUsername(), user.getEmail()));
 
     }
@@ -111,6 +112,29 @@ public class AuthController {
         emailService.sendEmailVerification(user.getEmail(), verificationUrl);
 
         return ResponseEntity.ok("User registered successfully!");
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@RequestParam("token") String token){
+        Optional<VerificationToken> optionalToken = verificationEmailTokenRepo.findByToken(token);
+
+        if(optionalToken.isEmpty()){
+            return ResponseEntity.badRequest().body("Invalid token.");
+        }
+
+        VerificationToken verificationToken = optionalToken.get();
+
+        if(verificationToken.getExpiryDate().isBefore(LocalDateTime.now())){
+            return ResponseEntity.badRequest().body("Token is expired.");
+        }
+
+        UserApp user = verificationToken.getUser();
+        user.setEmailVerified(true);
+        userRepository.save(user);
+
+        verificationEmailTokenRepo.delete(verificationToken);
+
+        return ResponseEntity.ok("Email verified successfully!");
     }
 
     @PostMapping("logout")

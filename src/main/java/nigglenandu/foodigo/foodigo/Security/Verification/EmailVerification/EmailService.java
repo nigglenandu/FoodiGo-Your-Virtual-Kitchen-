@@ -8,14 +8,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
+    private final JavaMailSender mailSender;
+
     @Autowired
-    private JavaMailSender mailSender;
+    public EmailService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void sendEmailVerification(String to, String verificationUrl){
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(to);
-        message.setSubject("Verify your email foodigo");
+        message.setSubject("Verify your email - foodigo");
         message.setText("Click the link to verify your account: " + verificationUrl);
     }
 }
