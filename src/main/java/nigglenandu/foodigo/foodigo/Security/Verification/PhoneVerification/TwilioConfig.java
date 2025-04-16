@@ -1,4 +1,4 @@
-package nigglenandu.foodigo.foodigo.Security.Verification.Configuration;
+package nigglenandu.foodigo.foodigo.Security.Verification.PhoneVerification;
 
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
@@ -15,12 +15,11 @@ public class TwilioConfig {
     private String twilioAuthToken;
 
     @Value("${twilio.phone-number}")
-    private String twilioSenderNumber;
-
+    private String phoneNumber;
 
     @PostConstruct
     public void init(){
         Twilio.init(twilioSid, twilioAuthToken);
-        System.out.println("Twilio initialized successfully with phone number" + twilioSenderNumber);
+        System.out.println("Twilio initialized successfully with phone number" + phoneNumber);
     }
 }

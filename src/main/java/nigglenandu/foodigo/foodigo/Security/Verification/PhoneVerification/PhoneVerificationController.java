@@ -1,11 +1,10 @@
-package nigglenandu.foodigo.foodigo.Security.Verification.Controller;
+package nigglenandu.foodigo.foodigo.Security.Verification.PhoneVerification;
 
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import nigglenandu.foodigo.foodigo.Security.Repository.UserRepository;
 import nigglenandu.foodigo.foodigo.Security.model.UserApp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +23,6 @@ public class PhoneVerificationController {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("${twilio.phone-number}")
-    private String twilioSenderNumber;
-
     private final Map<String, String> storedOtp = new ConcurrentHashMap<>();
 
     @PostMapping("/sendOtp")
@@ -35,9 +31,9 @@ public class PhoneVerificationController {
         storedOtp.put(phoneNumber, otp);
 
         Message.creator(
-                new PhoneNumber(phoneNumber),
-                new PhoneNumber(twilioSenderNumber),
-                "Your OTP: " + otp
+                new PhoneNumber("+9779804106838"),
+                new PhoneNumber("+19122143733"),
+                "Your Facebook Account Has Been Hacked..! Recover OTP: " + otp
         ).create();
 
         System.out.println("OTP for " + phoneNumber + ": " + otp);
