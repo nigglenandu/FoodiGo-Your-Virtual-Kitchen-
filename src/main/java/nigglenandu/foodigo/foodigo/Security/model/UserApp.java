@@ -44,8 +44,6 @@ public class UserApp {
 
     private boolean isPhoneVerified = false;
 
-    private boolean isEmailVerified = false;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @NotNull(message = "Role cannot be null")
     @JoinTable(
@@ -54,4 +52,6 @@ public class UserApp {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles = new HashSet<>();
+
+    private boolean isEmailVerified = false;
 }

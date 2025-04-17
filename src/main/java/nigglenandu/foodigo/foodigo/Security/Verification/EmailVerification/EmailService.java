@@ -21,5 +21,7 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Verify your email - foodigo");
         message.setText("Click the link to verify your account: " + verificationUrl);
+
+        mailSender.send(message);
     }
 }
