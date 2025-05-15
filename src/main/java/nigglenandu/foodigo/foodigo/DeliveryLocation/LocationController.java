@@ -11,13 +11,13 @@ public class LocationController {
     private IDeliveryLocationService locationService;
 
     @PostMapping("/update")
-    private ResponseEntity<?> updateLocation(@RequestBody LocationDto locationDto){
+    private ResponseEntity<?> updateLocation(@RequestBody DeliveryLocationDto locationDto){
         locationService.updateLocation(locationDto);
         return ResponseEntity.ok("Successfully updated location");
     }
 
     @GetMapping("/{deliveryId}")
-    private ResponseEntity<LocationDto> getLocation(@PathVariable Long deliveryId){
-        return ResponseEntity.ok( locationService.getLocation(deliveryId));
+    private ResponseEntity<DeliveryLocationDto> getLocation(@PathVariable Long deliveryId){
+        return ResponseEntity.ok( locationService.getCurrentLocation(deliveryId));
     }
 }

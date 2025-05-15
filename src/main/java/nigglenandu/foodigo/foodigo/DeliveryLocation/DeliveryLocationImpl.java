@@ -9,7 +9,7 @@ public class DeliveryLocationImpl implements IDeliveryLocationService{
     private DeliveryLocationRepository deliveryLocationRepository;
 
     @Override
-    public void updateLocation(LocationDto locationDto) {
+    public void updateLocation(DeliveryLocationDto locationDto) {
         DeliveryLocation location = new DeliveryLocation();
         location.setDeliveryId(locationDto.getDeliveryId());
         location.setLatitude(locationDto.getLatitude());
@@ -19,9 +19,9 @@ public class DeliveryLocationImpl implements IDeliveryLocationService{
     }
 
     @Override
-    public LocationDto getLocation(Long deliveryId) {
+    public DeliveryLocationDto getCurrentLocation(Long deliveryId) {
         DeliveryLocation location = deliveryLocationRepository.findById(deliveryId).orElseThrow(() -> new RuntimeException("Delivery person not found"));
-        LocationDto dto = new LocationDto();
+        DeliveryLocationDto dto = new DeliveryLocationDto();
         dto.setDeliveryId(location.getDeliveryId());
         dto.setLatitude(location.getLatitude());
         dto.setLongitude(location.getLongitude());
