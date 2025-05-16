@@ -18,5 +18,5 @@ public class DeliveryLocation {
     private Long deliveryId;
     private double longitude;
     private double latitude;
-    private long timeStamp;
+    private long timestamp;
 }
