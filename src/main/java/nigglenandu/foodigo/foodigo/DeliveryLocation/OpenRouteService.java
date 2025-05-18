@@ -21,8 +21,8 @@ public class OpenRouteService {
                 + "&end=" + destLng + "," + destLat;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", apiKey);  // ✅ Correct way to set API key
-        headers.set("Accept", "application/geo+json");  // ✅ Required content type
+        headers.set("Authorization", apiKey);
+        headers.set("Accept", "application/geo+json");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
