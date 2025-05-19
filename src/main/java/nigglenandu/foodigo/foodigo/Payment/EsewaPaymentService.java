@@ -23,7 +23,7 @@ public class EsewaPaymentService {
     @Value("${esewa.merchant.id}")
     private String merchantId;
 
-    @Value("${esewa.sucess.url}")
+    @Value("${esewa.success.url}")
     private String successUrl;
 
     @Value("${esewa.failure.url")
