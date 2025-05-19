@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eSewa Payment</title>
+    <script>
+        async function initiatePayment() {
+            try {
+                // Example payment request payload
+                const paymentRequest = {
+                    amount: 100.0,
+                    taxAmount: 10.0,
+                    serviceCharge: 5.0,
+                    deliveryCharge: 20.0,
+                    productCode: "PRODUCT123"
+                };
+
+                // Call the backend API to initiate payment
+                const response = await fetch('http://localhost:8080/api/payment/initiate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(paymentRequest)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to initiate payment');
+                }
+
+                const data = await response.json();
+
+                // Create a form dynamically
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = data.esewaUrl;
+
+                // Add form fields from the response
+                for (const [key, value] of Object.entries(data.formField)) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                }
+
+                // Append form to body and submit
+                document.body.appendChild(form);
+                form.submit();
+            } catch (error) {
+                console.error('Error initiating payment:', error);
+                alert('Failed to initiate payment. Please try again.');
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>eSewa Payment Integration</h1>
+<button onclick="initiatePayment()">Pay with eSewa</button>
+</body>
+</html>
