@@ -8,5 +8,5 @@ import java.util.Map;
 @Data
 public class PaymentFormFieldResponse {
     private String esewaUrl;
-    private Map<String, String> formField;
+    private Map<String, String> formField = new HashMap<>();
 }
