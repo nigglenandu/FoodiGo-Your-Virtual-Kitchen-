@@ -3,60 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eSewa Payment</title>
-    <script>
-        async function initiatePayment() {
-            try {
-                // Example payment request payload
-                const paymentRequest = {
-                    amount: 100.0,
-                    taxAmount: 10.0,
-                    serviceCharge: 5.0,
-                    deliveryCharge: 20.0,
-                    productCode: "PRODUCT123"
-                };
-
-                // Call the backend API to initiate payment
-                const response = await fetch('http://localhost:8080/api/payment/initiate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(paymentRequest)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to initiate payment');
-                }
-
-                const data = await response.json();
-
-                // Create a form dynamically
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = data.esewaUrl;
-
-                // Add form fields from the response
-                for (const [key, value] of Object.entries(data.formField)) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = value;
-                    form.appendChild(input);
-                }
-
-                // Append form to body and submit
-                document.body.appendChild(form);
-                form.submit();
-            } catch (error) {
-                console.error('Error initiating payment:', error);
-                alert('Failed to initiate payment. Please try again.');
-            }
+    <title>eSewa Payment Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
-    </script>
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        #response.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        #response.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
-<h1>eSewa Payment Integration</h1>
-<button onclick="initiatePayment()">Pay with eSewa</button>
+<div class="container">
+    <h1>eSewa Payment</h1>
+
+    <!-- Payment Initiation Form -->
+    <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" step="0.01" min="0" required>
+    </div>
+    <div class="form-group">
+        <label for="taxAmount">Tax Amount:</label>
+        <input type="number" id="taxAmount" step="0.01" min="0" required>
+    </div>
+    <div class="form-group">
+        <label for="serviceCharge">Service Charge:</label>
+        <input type="number" id="serviceCharge" step="0.01" min="0" required>
+    </div>
+    <div class="form-group">
+        <label for="deliveryCharge">Delivery Charge:</label>
+        <input type="number" id="deliveryCharge" step="0.01" min="0" required>
+    </div>
+    <button onclick="initiatePayment()">Initiate Payment</button>
+
+    <!-- Response Display -->
+    <div id="response"></div>
+</div>
+
+<script>
+    async function initiatePayment() {
+        const amount = parseFloat(document.getElementById('amount').value) || 0;
+        const taxAmount = parseFloat(document.getElementById('taxAmount').value) || 0;
+        const serviceCharge = parseFloat(document.getElementById('serviceCharge').value) || 0;
+        const deliveryCharge = parseFloat(document.getElementById('deliveryCharge').value) || 0;
+
+        const payload = {
+            amount: amount,
+            taxAmount: taxAmount,
+            serviceCharge: serviceCharge,
+            deliveryCharge: deliveryCharge,
+            productCode: "EPAYTEST"
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/api/payment/initiate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                displayResponse("Payment initiated successfully. Redirecting to eSewa...", "success");
+                setTimeout(() => {
+                    window.location.href = data.esewaUrl + '?' + Object.entries(data.formField)
+                        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                        .join('&');
+                }, 2000);
+            } else {
+                const error = await response.text();
+                displayResponse(`Error: ${error}`, "error");
+            }
+        } catch (error) {
+            displayResponse(`Error: ${error.message}`, "error");
+        }
+    }
+
+    function displayResponse(message, type) {
+        const responseDiv = document.getElementById('response');
+        responseDiv.textContent = message;
+        responseDiv.className = `response ${type}`;
+        responseDiv.style.display = 'block';
+    }
+
+    // Handle eSewa callback
+    window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const transactionUuid = urlParams.get('transaction_uuid');
+        const data = urlParams.get('data');
+
+        if (transactionUuid && data) {
+            fetch(`http://localhost:8080/api/payment/verify?transaction_uuid=${transactionUuid}&data=${data}`)
+                .then(response => response.text())
+                .then(result => {
+                    displayResponse(result, result.includes("Verified") ? "success" : "error");
+                })
+                .catch(error => {
+                    displayResponse(`Error verifying payment: ${error.message}`, "error");
+                });
+        }
+    });
+</script>
 </body>
 </html>

@@ -2,6 +2,7 @@ package nigglenandu.foodigo.foodigo.Payment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class EsewaPaymentService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    public EsewaPaymentService(RestTemplate restTemplate, ObjectMapper objectMapper) {
+    public EsewaPaymentService(@Qualifier("paymentRestTemplate") RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
