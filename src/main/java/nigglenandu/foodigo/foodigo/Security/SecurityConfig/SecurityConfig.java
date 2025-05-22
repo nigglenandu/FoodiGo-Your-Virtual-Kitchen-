@@ -49,6 +49,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/payment/initiate", "/api/payment/verify").permitAll() // Allow unauthenticated access
                         .anyRequest().permitAll() // Allows all requests without authentication
                 );
         return http.build();

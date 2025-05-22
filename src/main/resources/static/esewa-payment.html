@@ -3,108 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eSewa Payment Integration</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        #response {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: none;
-        }
-        #response.success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        #response.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
+    <title>eSewa Payment Test</title>
 </head>
 <body>
-<div class="container">
-    <h1>eSewa Payment</h1>
-
-    <!-- Payment Initiation Form -->
-    <div class="form-group">
-        <label for="amount">Amount:</label>
-        <input type="number" id="amount" step="0.01" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="taxAmount">Tax Amount:</label>
-        <input type="number" id="taxAmount" step="0.01" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="serviceCharge">Service Charge:</label>
-        <input type="number" id="serviceCharge" step="0.01" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="deliveryCharge">Delivery Charge:</label>
-        <input type="number" id="deliveryCharge" step="0.01" min="0" required>
-    </div>
-    <button onclick="initiatePayment()">Initiate Payment</button>
-
-    <!-- Response Display -->
-    <div id="response"></div>
-</div>
+<h1>Testing eSewa Payment</h1>
+<div id="payment-form"></div>
 
 <script>
+    // Function to initiate payment by calling the backend API
     async function initiatePayment() {
-        const amount = parseFloat(document.getElementById('amount').value) || 0;
-        const taxAmount = parseFloat(document.getElementById('taxAmount').value) || 0;
-        const serviceCharge = parseFloat(document.getElementById('serviceCharge').value) || 0;
-        const deliveryCharge = parseFloat(document.getElementById('deliveryCharge').value) || 0;
-
-        const payload = {
-            amount: amount,
-            taxAmount: taxAmount,
-            serviceCharge: serviceCharge,
-            deliveryCharge: deliveryCharge,
-            productCode: "EPAYTEST"
+        const paymentRequest = {
+            amount: 100.00,
+            taxAmount: 10.00,
+            serviceCharge: 5.00,
+            deliveryCharge: 15.00,
+            productCode: "EPAYTEST" // Replace with your test merchant ID
         };
 
         try {
@@ -113,50 +26,42 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(paymentRequest)
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                displayResponse("Payment initiated successfully. Redirecting to eSewa...", "success");
-                setTimeout(() => {
-                    window.location.href = data.esewaUrl + '?' + Object.entries(data.formField)
-                        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-                        .join('&');
-                }, 2000);
-            } else {
-                const error = await response.text();
-                displayResponse(`Error: ${error}`, "error");
+            if (!response.ok) {
+                throw new Error('Failed to initiate payment');
             }
+
+            const data = await response.json();
+            createPaymentForm(data.esewaUrl, data.formField);
         } catch (error) {
-            displayResponse(`Error: ${error.message}`, "error");
+            console.error('Error initiating payment:', error);
+            alert('Failed to initiate payment');
         }
     }
 
-    function displayResponse(message, type) {
-        const responseDiv = document.getElementById('response');
-        responseDiv.textContent = message;
-        responseDiv.className = `response ${type}`;
-        responseDiv.style.display = 'block';
+    // Function to create and auto-submit the form
+    function createPaymentForm(esewaUrl, formFields) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = esewaUrl;
+        form.style.display = 'none'; // Hide the form
+
+        for (const [key, value] of Object.entries(formFields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        document.getElementById('payment-form').appendChild(form);
+        form.submit(); // Auto-submit the form
     }
 
-    // Handle eSewa callback
-    window.addEventListener('load', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const transactionUuid = urlParams.get('transaction_uuid');
-        const data = urlParams.get('data');
-
-        if (transactionUuid && data) {
-            fetch(`http://localhost:8080/api/payment/verify?transaction_uuid=${transactionUuid}&data=${data}`)
-                .then(response => response.text())
-                .then(result => {
-                    displayResponse(result, result.includes("Verified") ? "success" : "error");
-                })
-                .catch(error => {
-                    displayResponse(`Error verifying payment: ${error.message}`, "error");
-                });
-        }
-    });
+    // Call initiatePayment when the page loads
+    window.onload = initiatePayment;
 </script>
 </body>
 </html>

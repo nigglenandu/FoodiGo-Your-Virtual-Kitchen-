@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #28a745; }
+        p { margin: 10px 0; }
+        #status { color: #333; }
+        #status.error { color: red; }
+    </style>
+</head>
+<body>
+<h1>Payment Successful</h1>
+<p>Transaction UUID: <span id="transactionUuid"></span></p>
+<p>Status: <span id="status">Verifying...</span></p>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const transactionUuid = params.get('transaction_uuid');
+    const data = params.get('data');
+    document.getElementById('transactionUuid').textContent = transactionUuid || 'N/A';
+
+    if (transactionUuid && data) {
+        fetch(`http://localhost:8080/api/payment/verify?transaction_uuid=${transactionUuid}&data=${encodeURIComponent(data)}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('status').textContent = data;
+                if (data.includes('failed')) {
+                    document.getElementById('status').classList.add('error');
+                }
+            })
+            .catch(error => {
+                document.getElementById('status').textContent = 'Verification failed: ' + error.message;
+                document.getElementById('status').classList.add('error');
+            });
+    } else {
+        document.getElementById('status').textContent = 'Missing transaction_uuid or data';
+        document.getElementById('status').classList.add('error');
+    }
+</script>
+</body>
+</html>
