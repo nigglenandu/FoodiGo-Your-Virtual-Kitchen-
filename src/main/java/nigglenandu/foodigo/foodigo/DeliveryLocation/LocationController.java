@@ -40,4 +40,12 @@ public class LocationController {
         return ResponseEntity.ok().body(directionsJson);
 //        return ResponseEntity.ok(openRouteService.getDirections(originLat, originLng, destLat, destLng));
     }
+
+    @GetMapping("/{deliveryId}/shortest-distance")
+    public ResponseEntity<Double> getShortestDistance(@PathVariable Long deliveryId) {
+        double distance = locationService.calculateShortestPathDistance(deliveryId);
+        return ResponseEntity.ok(distance);
+    }
+
+
 }

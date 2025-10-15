@@ -15,6 +15,7 @@ import lombok.*;
 public class DeliveryLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private Long deliveryId;
     private double longitude;
     private double latitude;

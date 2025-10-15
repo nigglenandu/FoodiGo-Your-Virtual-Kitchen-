@@ -8,8 +8,9 @@ import lombok.*;
 @Setter
 @ToString
 public class DeliveryLocationDto {
+    private Long id;
     private Long deliveryId;
-    private double Longitude;
+    private double longitude;
     private double latitude;
-    private long timeStamp;
+    private long timestamp;
 }
