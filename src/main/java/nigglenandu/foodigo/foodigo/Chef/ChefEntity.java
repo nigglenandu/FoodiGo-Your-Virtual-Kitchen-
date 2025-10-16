@@ -1,9 +1,6 @@
 package nigglenandu.foodigo.foodigo.Chef;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,21 +13,38 @@ public class ChefEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chefId;
 
-    private String name;
-    private String kitchenName;
-    private String kitchenAddress;
+    private String fname;
+    private String lname;
     private String email;
-    private String phone;
+    private String mobile;
+    private String password;
+    private String confirmPassword;
+
+    private String house;
+    private String area;
+    private String city;
+    private String suburban;
+    private String state;
+    private String postcode;
+
+    @OneToMany(mappedBy = "chef", cascade = CascadeType.ALL)
+    private List<ChefFinalOrder> orders;
 
     public ChefEntity() {}
 
-    public ChefEntity(Long chefId, String name, String kitchenName, String kitchenAddress, String email, String phone) {
-        this.chefId = chefId;
-        this.name = name;
-        this.kitchenName = kitchenName;
-        this.kitchenAddress = kitchenAddress;
+    public ChefEntity(String fname, String lname, String email, String mobile, String password, String confirmPassword,
+                String house, String area, String city, String suburban, String state, String postcode) {
+        this.fname = fname;
+        this.lname = lname;
         this.email = email;
-        this.phone = phone;
+        this.mobile = mobile;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
+        this.house = house;
+        this.area = area;
+        this.city = city;
+        this.suburban = suburban;
+        this.state = state;
+        this.postcode = postcode;
     }
-
 }
