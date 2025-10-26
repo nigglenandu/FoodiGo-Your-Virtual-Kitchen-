@@ -1,6 +1,5 @@
 package nigglenandu.foodigo.foodigo.Chef;
 
-package nigglenandu.foodigo.foodigo.Customer;
 
 import jakarta.persistence.*;
 import lombok.Getter;

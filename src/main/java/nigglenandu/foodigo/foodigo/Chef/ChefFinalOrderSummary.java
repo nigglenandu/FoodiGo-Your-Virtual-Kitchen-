@@ -25,6 +25,11 @@ public class ChefFinalOrderSummary {
     @OneToMany(mappedBy = "summary", cascade = CascadeType.ALL)
     private List<ChefFinalOrder> dishOrders;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private CustomerEntity customer;
+
+
     public ChefFinalOrderSummary() {}
 
     public ChefFinalOrderSummary(String address, String grandTotalPrice, String mobileNumber,
