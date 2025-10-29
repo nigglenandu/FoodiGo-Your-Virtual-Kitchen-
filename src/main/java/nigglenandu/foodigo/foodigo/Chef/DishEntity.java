@@ -17,6 +17,7 @@ public class DishEntity {
     private String description;
     private double price;
     private boolean available;
+    private String ImageUrl;
 
     // Link this dish to a specific Chef
     @ManyToOne

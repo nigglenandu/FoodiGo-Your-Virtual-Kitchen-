@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface DishRepository extends JpaRepository<DishEntity, Long> {
     List<DishEntity> findByChefChefId(Long chefId);
+
+    List<DishEntity> findByChef_ChefId(Long chefId);
 }
